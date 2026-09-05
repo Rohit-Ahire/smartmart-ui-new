@@ -1,104 +1,110 @@
-import Navbar from "../components/Navbar";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 import "./Login.css";
 
 function Login() {
-  const features = [
-    "Quick Billing",
-    "Inventory Management",
-    "Customer Management",
-    "GST Ready Invoice",
-    "Razorpay Payments",
-    "AWS Image Upload",
-  ];
+  const navigate = useNavigate();
 
-  const benefits = [
-    {
-      title: "Fast Billing",
-      text: "Generate invoices in seconds with a smooth checkout experience.",
-    },
-    {
-      title: "Secure Payments",
-      text: "Accept online payments using Razorpay integration.",
-    },
-    {
-      title: "Cloud Images",
-      text: "Store and manage product images securely on AWS S3.",
-    },
-    {
-      title: "Easy Reports",
-      text: "View sales and customer records anytime from one dashboard.",
-    },
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!username.trim() || !password.trim()) {
+      setError("Please enter username and password.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await api.post("/auth/login", { username, password });
+      localStorage.setItem("user", JSON.stringify(res.data));
+      localStorage.setItem("username", username);
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      setError("Wrong username or password.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const features = [
+    ["⚡", "Fast Billing"],
+    ["📦", "Inventory Management"],
+    ["👥", "Customer Management"],
+    ["🧾", "GST Ready Invoices"],
+    ["📄", "PDF Invoice Download"],
+    ["🔐", "Simple & Secure"],
   ];
 
   return (
-    <>
-      <Navbar />
-
-      <section className="hero">
-        <div className="hero-left">
-          <h1>
-            Smart Billing Software for <span>Retail Shops</span>
-          </h1>
-
-          <p>
-            Manage products, customers, billing, invoices and online payments
-            from one place.
-          </p>
-
-          <button className="hero-btn">Get Started</button>
+    <div className="login-page">
+      <section className="login-left">
+        <div className="brand">
+          <h1>🛒 SmartMart</h1>
+          <p>Retail POS Software</p>
         </div>
 
-        <div className="hero-right">
-          <div className="shop-card">
-            <div className="shop-board">SHOP</div>
+        <h2>
+          Smart Billing Software for <span>Retail Shops</span>
+        </h2>
 
-            <div className="shop-window">
-              <div className="counter"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="features" id="features">
-        <h2>Everything You Need</h2>
-
-        <p>
-          A complete retail billing solution with inventory, payments and
-          invoice generation.
+        <p className="login-desc">
+          Manage products, customers, billing and GST invoices from one simple
+          dashboard.
         </p>
 
-        <div className="feature-grid">
+        <ul className="feature-list">
           {features.map((item, index) => (
-            <div className="feature-card" key={index}>
-              <div className="feature-icon">✓</div>
-              <h3>{item}</h3>
-            </div>
+            <li key={index}>
+              <span className="feature-icon">{item[0]}</span> {item[1]}
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
-      <section className="benefits">
-        <div className="benefits-header">
-          <h2>Why Choose SmartMart?</h2>
+      <section className="login-right">
+        <div className="login-card">
+          <h2>Welcome Back 👋</h2>
+          <p>Login to your shop dashboard</p>
 
-          <p>
-            Built for modern retail stores with speed, simplicity and security.
-          </p>
-        </div>
+          <form onSubmit={handleSubmit}>
+            <label>👤 Username</label>
+            <input
+              type="text"
+              placeholder="Enter username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
 
-        <div className="benefits-grid">
-          {benefits.map((item, index) => (
-            <div className="benefit-card" key={index}>
-              <div className="benefit-number">0{index + 1}</div>
+            <label>🔑 Password</label>
+            <input
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-              <h3>{item.title}</h3>
+            {error && <span className="error-text">⚠️ {error}</span>}
 
-              <p>{item.text}</p>
+            <button type="submit" className="login-submit" disabled={loading}>
+              {loading ? "Logging in..." : "🔐 Login"}
+            </button>
+
+            <div className="demo-hint">
+              Demo login: <strong>admin</strong> / <strong>admin123</strong>
             </div>
-          ))}
+          </form>
         </div>
       </section>
-    </>
+    </div>
   );
 }
 

@@ -1,10 +1,19 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import "./Products.css";
+import "./shared.css";
 
-const PRODUCT_API = "http://localhost:8080/api/products";
-const UPLOAD_API = "http://localhost:8080/api/upload";
+const PRODUCT_API = "/products";
+const UPLOAD_API = "/upload";
+
+const EMPTY_FORM = {
+  name: "",
+  category: "",
+  price: "",
+  quantity: "",
+  imageUrl: "",
+};
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -12,22 +21,16 @@ export default function Products() {
   const [editing, setEditing] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  const [form, setForm] = useState({
-    name: "",
-    category: "",
-    price: "",
-    quantity: "",
-    imageUrl: ""
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
 
   useEffect(() => {
     loadProducts();
   }, []);
 
-  const loadProducts = async () => {
-    const res = await axios.get(PRODUCT_API);
+  async function loadProducts() {
+    const res = await api.get(PRODUCT_API);
     setProducts(res.data || []);
-  };
+  }
 
   const uploadImage = async (e) => {
     const file = e.target.files[0];
@@ -39,13 +42,13 @@ export default function Products() {
     setUploading(true);
 
     try {
-      const res = await axios.post(UPLOAD_API, data, {
-        headers: { "Content-Type": "multipart/form-data" }
+      const res = await api.post(UPLOAD_API, data, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
-        imageUrl: res.data.imageUrl
+        imageUrl: res.data.imageUrl,
       }));
     } catch (err) {
       console.error(err);
@@ -55,27 +58,25 @@ export default function Products() {
     }
   };
 
+  const openCreate = () => {
+    setEditing(null);
+    setForm(EMPTY_FORM);
+    setShowModal(true);
+  };
+
   const saveProduct = async (e) => {
     e.preventDefault();
 
     try {
       if (editing) {
-        await axios.put(`${PRODUCT_API}/${editing.id}`, form);
+        await api.put(`${PRODUCT_API}/${editing.id}`, form);
       } else {
-        await axios.post(PRODUCT_API, form);
+        await api.post(PRODUCT_API, form);
       }
 
       setShowModal(false);
       setEditing(null);
-
-      setForm({
-        name: "",
-        category: "",
-        price: "",
-        quantity: "",
-        imageUrl: ""
-      });
-
+      setForm(EMPTY_FORM);
       loadProducts();
     } catch (err) {
       console.error(err);
@@ -90,7 +91,7 @@ export default function Products() {
       category: product.category,
       price: product.price,
       quantity: product.quantity,
-      imageUrl: product.imageUrl || ""
+      imageUrl: product.imageUrl || "",
     });
     setShowModal(true);
   };
@@ -98,7 +99,7 @@ export default function Products() {
   const deleteProduct = async (id) => {
     if (!window.confirm("Delete this product?")) return;
 
-    await axios.delete(`${PRODUCT_API}/${id}`);
+    await api.delete(`${PRODUCT_API}/${id}`);
     loadProducts();
   };
 
@@ -106,38 +107,30 @@ export default function Products() {
     <>
       <Sidebar />
 
-      <div className="page-content">
-        <div className="products-page">
-          <h1>Products</h1>
-          <p>Manage all shop products.</p>
+      <div className="page-shell">
+        <div className="page-header">
+          <div>
+            <span className="page-eyebrow">🗂️ Inventory</span>
+            <h1 className="page-title">Products</h1>
+            <p className="page-subtitle">
+              Manage products, prices and stock levels.
+            </p>
+          </div>
 
-          <button
-            className="add-btn"
-            onClick={() => {
-              setEditing(null);
-              setForm({
-                name: "",
-                category: "",
-                price: "",
-                quantity: "",
-                imageUrl: ""
-              });
-              setShowModal(true);
-            }}
-          >
-            + Add Product
+          <button className="btn btn-primary" onClick={openCreate}>
+            ➕ Add Product
           </button>
+        </div>
 
-          <div className="products-card">
-            <table className="products-table">
+        <div className="tbl-card">
+          <div className="tbl-wrap">
+            <table className="tbl">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Image</th>
-                  <th>Name</th>
+                  <th>Product</th>
                   <th>Category</th>
                   <th>Price</th>
-                  <th>Quantity</th>
+                  <th>Stock</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -145,45 +138,57 @@ export default function Products() {
               <tbody>
                 {products.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="empty-row">
-                      No products found.
+                    <td colSpan="5" className="empty-state">
+                      📦 No products found. Click "Add Product" to create one.
                     </td>
                   </tr>
                 ) : (
-                  products.map(product => (
+                  products.map((product) => (
                     <tr key={product.id}>
-                      <td>{product.id}</td>
-
                       <td>
-                        {product.imageUrl ? (
-                          <img
-                            src={product.imageUrl}
-                            alt={product.name}
-                            className="product-image"
-                          />
-                        ) : (
-                          <div className="no-image">No Image</div>
-                        )}
+                        <div className="product-cell">
+                          {product.imageUrl ? (
+                            <img
+                              src={product.imageUrl}
+                              alt={product.name}
+                              className="product-image"
+                            />
+                          ) : (
+                            <div className="no-image">No</div>
+                          )}
+                          <div>
+                            <strong>{product.name}</strong>
+                            <small className="product-id">
+                              ID: {product.id}
+                            </small>
+                          </div>
+                        </div>
                       </td>
-
-                      <td>{product.name}</td>
                       <td>{product.category}</td>
                       <td>₹{product.price}</td>
-                      <td>{product.quantity}</td>
-
+                      <td>
+                        <span
+                          className={
+                            product.quantity > 0
+                              ? "stock-pill"
+                              : "stock-pill low"
+                          }
+                        >
+                          {product.quantity}
+                        </span>
+                      </td>
                       <td>
                         <button
-                          className="edit-btn"
+                          className="btn btn-soft"
                           onClick={() => editProduct(product)}
                         >
-                          Edit
+                          ✏️ Edit
                         </button>
-
                         <button
-                          className="delete-btn"
+                          className="btn btn-danger"
                           onClick={() => deleteProduct(product.id)}
                         >
-                          Delete
+                          🗑️ Delete
                         </button>
                       </td>
                     </tr>
@@ -192,110 +197,100 @@ export default function Products() {
               </tbody>
             </table>
           </div>
-
-          {showModal && (
-            <div className="modal-overlay">
-              <div className="modal-box">
-                <h2>{editing ? "Edit Product" : "Add Product"}</h2>
-
-                <form onSubmit={saveProduct}>
-                  <input
-                    type="text"
-                    placeholder="Product Name"
-                    value={form.name}
-                    onChange={(e) =>
-                      setForm(prev => ({
-                        ...prev,
-                        name: e.target.value
-                      }))
-                    }
-                    required
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Category"
-                    value={form.category}
-                    onChange={(e) =>
-                      setForm(prev => ({
-                        ...prev,
-                        category: e.target.value
-                      }))
-                    }
-                    required
-                  />
-
-                  <input
-                    type="number"
-                    placeholder="Price"
-                    value={form.price}
-                    onChange={(e) =>
-                      setForm(prev => ({
-                        ...prev,
-                        price: e.target.value
-                      }))
-                    }
-                    required
-                  />
-
-                  <input
-                    type="number"
-                    placeholder="Quantity"
-                    value={form.quantity}
-                    onChange={(e) =>
-                      setForm(prev => ({
-                        ...prev,
-                        quantity: e.target.value
-                      }))
-                    }
-                    required
-                  />
-
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={uploadImage}
-                  />
-
-                  {uploading && <p>Uploading to AWS S3...</p>}
-
-                  {form.imageUrl && (
-                    <img
-                      src={form.imageUrl}
-                      alt="Preview"
-                      style={{
-                        width: "80px",
-                        height: "80px",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                        marginTop: "10px"
-                      }}
-                    />
-                  )}
-
-                  <div className="modal-actions">
-                    <button
-                      type="button"
-                      className="cancel-btn"
-                      onClick={() => setShowModal(false)}
-                    >
-                      Cancel
-                    </button>
-
-                    <button
-                      type="submit"
-                      className="save-btn"
-                      disabled={uploading}
-                    >
-                      {editing ? "Update" : "Save"}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
         </div>
       </div>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>{editing ? "Edit Product" : "Add Product"}</h2>
+            <p className="modal-hint">
+              {editing
+                ? "Update the product details below."
+                : "Fill in the details for the new product."}
+            </p>
+
+            <form onSubmit={saveProduct}>
+              <label>Product Name</label>
+              <input
+                type="text"
+                placeholder="e.g. Parle-G Biscuits"
+                value={form.name}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, name: e.target.value }))
+                }
+                required
+              />
+
+              <label>Category</label>
+              <input
+                type="text"
+                placeholder="e.g. Grocery"
+                value={form.category}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, category: e.target.value }))
+                }
+                required
+              />
+
+              <label>Price (₹)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 25.00"
+                value={form.price}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, price: e.target.value }))
+                }
+                required
+              />
+
+              <label>Quantity</label>
+              <input
+                type="number"
+                min="0"
+                placeholder="e.g. 100"
+                value={form.quantity}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, quantity: e.target.value }))
+                }
+                required
+              />
+
+              <label>Product Image</label>
+              <input type="file" accept="image/*" onChange={uploadImage} />
+
+              {uploading && <p className="upload-hint">Uploading image...</p>}
+
+              {form.imageUrl && !uploading && (
+                <img
+                  src={form.imageUrl}
+                  alt="Preview"
+                  className="thumb-preview"
+                />
+              )}
+
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={uploading}
+                >
+                  {editing ? "Update" : "Save"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }

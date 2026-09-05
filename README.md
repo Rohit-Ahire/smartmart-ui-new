@@ -1,16 +1,80 @@
-# React + Vite
+# SmartMart — Frontend (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Responsive retail POS dashboard for SmartMart. Builds bills with 18% GST,
+accepts **Cash** or **online payment via Razorpay**, tracks customers, products
+and invoices, with a lightweight admin UI.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
 
-## React Compiler
+| Layer        | Technology                                             |
+| ------------ | ------------------------------------------------------ |
+| Framework    | React 19 (function components + hooks)                 |
+| Build tool   | Vite                                                   |
+| Routing      | React Router (protected routes via `RequireLogin`)     |
+| HTTP client  | Axios (`src/services/api.js`)                          |
+| Icons        | react-icons (Font Awesome)                             |
+| Payments     | Razorpay Checkout (test mode)                          |
+| Linting      | ESLint (flat config)                                   |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+src/
+├── main.jsx               # app entry
+├── App.jsx                # routes + login guard
+├── components/
+│   └── Sidebar.{jsx,css}  # app shell navigation (icons + user)
+├── pages/
+│   ├── Login.{jsx,css}    # auth screen
+│   ├── Dashboard.{jsx,css}  # stats, greeting, recent bills
+│   ├── Products.{jsx,css}   # inventory CRUD + image upload
+│   ├── Customers.{jsx,css}  # CRM: spend/bills/last-visit
+│   ├── Billing.{jsx,css}    # POS: cart, GST, Cash/Razorpay
+│   ├── Invoice.{jsx,css}    # invoices + PDF download
+│   └── shared.css           # shared design system
+└── services/
+    └── api.js            # axios instance (baseURL http://localhost:8080/api)
+```
+
+---
+
+## Payment Flow (Razorpay)
+
+1. Create a bill → backend stores it as `PENDING`.
+2. **Cash** → frontend calls `PUT /bills/{id}/pay` → bill becomes `PAID`.
+3. **Card / UPI** → frontend requests a Razorpay order
+   (`POST /payment/create-order`) and opens the Razorpay Checkout.
+4. On success frontend calls `POST /payment/verify` with the signed response;
+   backend verifies the HMAC-SHA256 signature and marks the bill `PAID`.
+5. Any online-payment failure offers a cash fallback so billing never dead-ends.
+
+Razorpay checkout script is loaded in `index.html`, keys are served to the
+browser from the backend (test key id only — the secret never leaves the server).
+
+---
+
+## Scripts
+
+```bash
+npm install        # first time
+npm run dev        # dev server  → http://localhost:5173
+npm run lint       # eslint
+npm run build      # production build → dist/
+npm run preview    # preview production build
+```
+
+## Default Login
+
+```
+username: admin
+password: admin123
+```
+
+## Local Development
+
+The backend must be running on `http://localhost:8080` (Spring Boot). See the
+backend `README.md` for setup. CORS is configured to allow `http://localhost:5173`.

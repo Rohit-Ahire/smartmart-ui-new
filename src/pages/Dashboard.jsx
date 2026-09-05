@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import axios from "axios";
+import api from "../services/api";
 import "./Dashboard.css";
+import "./shared.css";
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -13,16 +14,21 @@ export default function Dashboard() {
 
   const [recentBills, setRecentBills] = useState([]);
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
+  const username = localStorage.getItem("username") || "Admin";
 
-  const loadDashboard = async () => {
+  function greeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
+  }
+
+  async function loadDashboard() {
     try {
       const [productsRes, customersRes, billsRes] = await Promise.all([
-        axios.get("http://localhost:8080/api/products"),
-        axios.get("http://localhost:8080/api/customers"),
-        axios.get("http://localhost:8080/api/invoices"),
+        api.get("/products"),
+        api.get("/customers"),
+        api.get("/invoices"),
       ]);
 
       const bills = billsRes.data || [];
@@ -43,80 +49,119 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Dashboard Error:", error);
     }
-  };
+  }
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  const statCards = [
+    {
+      label: "Total Products",
+      value: stats.products,
+      emoji: "📦",
+      tone: "teal",
+    },
+    {
+      label: "Total Customers",
+      value: stats.customers,
+      emoji: "👥",
+      tone: "amber",
+    },
+    {
+      label: "Total Bills",
+      value: stats.bills,
+      emoji: "🧾",
+      tone: "emerald",
+    },
+    {
+      label: "Total Revenue",
+      value: `₹${stats.revenue.toLocaleString()}`,
+      emoji: "💰",
+      tone: "violet",
+    },
+  ];
 
   return (
-    <div className="dashboard-page">
+    <>
       <Sidebar />
 
-      <div className="dashboard-content">
-        <h1>Dashboard</h1>
-        <p>Retail POS Overview</p>
+      <div className="page-shell">
+        <div className="page-header">
+          <div>
+            <span className="page-eyebrow">📊 Dashboard Overview</span>
+            <h1 className="page-title">
+              {greeting()}, {username} 👋
+            </h1>
+            <p className="page-subtitle">
+              Here is what is happening at your store today.
+            </p>
+          </div>
+        </div>
 
         <div className="stats-grid">
-          <div className="stat-card">
-            <div style={{ fontSize: "40px" }}>📦</div>
-            <h2>{stats.products}</h2>
-            <p>Total Products</p>
-          </div>
-
-          <div className="stat-card">
-            <div style={{ fontSize: "40px" }}>👥</div>
-            <h2>{stats.customers}</h2>
-            <p>Total Customers</p>
-          </div>
-
-          <div className="stat-card">
-            <div style={{ fontSize: "40px" }}>🧾</div>
-            <h2>{stats.bills}</h2>
-            <p>Total Bills</p>
-          </div>
-
-          <div className="stat-card">
-            <div style={{ fontSize: "40px" }}>💰</div>
-            <h2>₹{stats.revenue.toLocaleString()}</h2>
-            <p>Total Revenue</p>
-          </div>
+          {statCards.map((card) => (
+            <div className="stat-card" key={card.label}>
+              <span className={`stat-icon ${card.tone}`}>{card.emoji}</span>
+              <div>
+                <h2>{card.value}</h2>
+                <p>{card.label}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="recent-section">
-          <h3>Recent Bills</h3>
+          <div className="section-head">
+            <h3>Recent Bills</h3>
+          </div>
 
-          <table className="recent-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Customer</th>
-                <th>Total</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {recentBills.length > 0 ? (
-                recentBills.map((bill) => (
-                  <tr key={bill.id}>
-                    <td>{bill.id}</td>
-                    <td>{bill.customerName}</td>
-                    <td>₹{bill.totalAmount}</td>
-                    <td>
-                      <span className="status-badge">
-                        {bill.paymentStatus}
-                      </span>
-                    </td>
+          <div className="tbl-card">
+            <div className="tbl-wrap">
+              <table className="tbl">
+                <thead>
+                  <tr>
+                    <th>Bill ID</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Status</th>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>
-                    No bills found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                </thead>
+
+                <tbody>
+                  {recentBills.length > 0 ? (
+                    recentBills.map((bill) => (
+                      <tr key={bill.id}>
+                        <td>#{bill.id}</td>
+                        <td>{bill.customerName}</td>
+                        <td>₹{bill.totalAmount}</td>
+                        <td>
+                          <span
+                            className={
+                              bill.paymentStatus === "PAID"
+                                ? "badge badge-paid"
+                                : "badge badge-pending"
+                            }
+                          >
+                            {bill.paymentStatus}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="empty-state">
+                        🧾 No bills yet. Create your first bill from the
+                        Billing page.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
