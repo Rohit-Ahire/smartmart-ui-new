@@ -1,10 +1,33 @@
 import { useEffect, useState } from "react";
+import { FaDownload } from "react-icons/fa";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import "./Invoice.css";
 import "./shared.css";
 
 const API = "/bills";
+
+function formatIST(iso) {
+  if (!iso) return "-";
+
+  const d = new Date(iso);
+
+  const time = d.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Kolkata",
+  });
+
+  const date = d.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  });
+
+  return `${time} · ${date}`;
+}
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
@@ -22,9 +45,24 @@ export default function Invoices() {
     loadInvoices();
   }, []);
 
-  const downloadPdf = (id) => {
-    const baseUrl = api.defaults.baseURL;
-    window.open(`${baseUrl}/bills/${id}/pdf`, "_blank");
+  const downloadPdf = async (id) => {
+    try {
+      const res = await api.get(`/bills/${id}/pdf`, {
+        responseType: "blob",
+      });
+
+      const url = URL.createObjectURL(res.data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `invoice-${id}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert("Could not download the PDF. Please try again.");
+    }
   };
 
   return (
@@ -60,7 +98,7 @@ export default function Invoices() {
                 {invoices.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="empty-state">
-                      📄 No invoices yet. Generate one from the Billing page.
+                      No invoices yet. Generate one from the Billing page.
                     </td>
                   </tr>
                 ) : (
@@ -81,18 +119,14 @@ export default function Invoices() {
                         </span>
                       </td>
                       <td>
-                        {invoice.createdAt
-                          ? new Date(invoice.createdAt).toLocaleString("en-IN", {
-                              timeZone: "Asia/Kolkata",
-                            })
-                          : "-"}
+                        {formatIST(invoice.createdAt)}
                       </td>
                       <td>
                         <button
                           className="btn btn-primary"
                           onClick={() => downloadPdf(invoice.id)}
                         >
-                          ⬇️ PDF
+                          <FaDownload /> PDF
                         </button>
                       </td>
                     </tr>

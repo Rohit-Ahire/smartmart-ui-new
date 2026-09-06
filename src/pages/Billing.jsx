@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { FaMoneyBillWave, FaCreditCard } from "react-icons/fa";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import "./Billing.css";
@@ -264,7 +265,7 @@ function Billing() {
       <div className="page-shell">
         <div className="page-header">
           <div>
-            <span className="page-eyebrow">🛒 Point of Sale</span>
+            <span className="page-eyebrow">Point of Sale</span>
             <h1 className="page-title">Billing</h1>
             <p className="page-subtitle">
               Pick products, choose a payment method and generate instant bills.
@@ -330,7 +331,7 @@ function Billing() {
 
             <div className="products-grid">
               {filteredProducts.length === 0 && (
-                <div className="no-products">🔍 No products found.</div>
+                <div className="no-products">No products found.</div>
               )}
 
               {filteredProducts.map((product) => (
@@ -369,7 +370,7 @@ function Billing() {
 
             {cart.length === 0 ? (
               <p className="cart-empty">
-                🛒 No items yet. Click a product to add it here.
+                No items yet. Click a product to add it here.
               </p>
             ) : (
               <>
@@ -418,7 +419,7 @@ function Billing() {
                       }
                       onClick={() => setPaymentMethod("cash")}
                     >
-                      <span className="pay-emoji">💵</span>
+                      <FaMoneyBillWave />
                       <span>Cash</span>
                     </button>
                     <button
@@ -430,7 +431,7 @@ function Billing() {
                       }
                       onClick={() => setPaymentMethod("online")}
                     >
-                      <span className="pay-emoji">💳</span>
+                      <FaCreditCard />
                       <span>Card / UPI</span>
                     </button>
                   </div>
@@ -443,10 +444,10 @@ function Billing() {
                     disabled={processing}
                   >
                     {processing
-                      ? "⏳ Processing..."
+                      ? "Processing..."
                       : paymentMethod === "cash"
-                        ? `Collect 💵 Rs. ${total.toFixed(2)}`
-                        : `Pay 💳 Rs. ${total.toFixed(2)} Online`}
+                        ? `Collect Cash Rs. ${total.toFixed(2)}`
+                        : `Pay Online Rs. ${total.toFixed(2)}`}
                   </button>
                 </div>
               </>

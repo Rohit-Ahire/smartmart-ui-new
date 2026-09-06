@@ -1,5 +1,22 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import {
+  FaShoppingCart,
+  FaChartBar,
+  FaBoxOpen,
+  FaUsers,
+  FaReceipt,
+  FaFileInvoice,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import "./Sidebar.css";
+
+const NAV_ITEMS = [
+  { to: "/dashboard", icon: FaChartBar, label: "Dashboard" },
+  { to: "/products", icon: FaBoxOpen, label: "Products" },
+  { to: "/customers", icon: FaUsers, label: "Customers" },
+  { to: "/billing", icon: FaReceipt, label: "Billing" },
+  { to: "/invoice", icon: FaFileInvoice, label: "Invoices" },
+];
 
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -14,7 +31,9 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <span className="brand-badge">🛒</span>
+        <span className="brand-badge">
+          <FaShoppingCart />
+        </span>
         <div className="brand-text">
           <strong>SmartMart</strong>
           <small>Retail POS</small>
@@ -22,21 +41,12 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        <NavLink to="/dashboard">
-          <span>📊</span><span>Dashboard</span>
-        </NavLink>
-        <NavLink to="/products">
-          <span>📦</span><span>Products</span>
-        </NavLink>
-        <NavLink to="/customers">
-          <span>👥</span><span>Customers</span>
-        </NavLink>
-        <NavLink to="/billing">
-          <span>🧾</span><span>Billing</span>
-        </NavLink>
-        <NavLink to="/invoice">
-          <span>📄</span><span>Invoices</span>
-        </NavLink>
+        {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+          <NavLink key={to} to={to}>
+            <Icon />
+            <span>{label}</span>
+          </NavLink>
+        ))}
       </nav>
 
       <div className="sidebar-footer">
@@ -51,7 +61,7 @@ export default function Sidebar() {
         </div>
 
         <button className="logout-btn" onClick={handleLogout}>
-          🚪 Logout
+          <FaSignOutAlt /> Logout
         </button>
       </div>
     </aside>

@@ -1,5 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  FaShoppingCart,
+  FaBolt,
+  FaBoxOpen,
+  FaUsers,
+  FaReceipt,
+  FaFileInvoice,
+  FaLock,
+  FaUser,
+} from "react-icons/fa";
 import api from "../services/api";
 import "./Login.css";
 
@@ -36,19 +46,21 @@ function Login() {
   };
 
   const features = [
-    ["⚡", "Fast Billing"],
-    ["📦", "Inventory Management"],
-    ["👥", "Customer Management"],
-    ["🧾", "GST Ready Invoices"],
-    ["📄", "PDF Invoice Download"],
-    ["🔐", "Simple & Secure"],
+    [FaBolt, "Fast Billing"],
+    [FaBoxOpen, "Inventory Management"],
+    [FaUsers, "Customer Management"],
+    [FaReceipt, "GST Ready Invoices"],
+    [FaFileInvoice, "PDF Invoice Download"],
+    [FaLock, "Simple & Secure"],
   ];
 
   return (
     <div className="login-page">
       <section className="login-left">
         <div className="brand">
-          <h1>🛒 SmartMart</h1>
+          <h1>
+            <FaShoppingCart className="brand-icon" /> SmartMart
+          </h1>
           <p>Retail POS Software</p>
         </div>
 
@@ -62,9 +74,12 @@ function Login() {
         </p>
 
         <ul className="feature-list">
-          {features.map((item, index) => (
-            <li key={index}>
-              <span className="feature-icon">{item[0]}</span> {item[1]}
+          {features.map(([Icon, label]) => (
+            <li key={label}>
+              <span className="feature-icon">
+                <Icon />
+              </span>{" "}
+              {label}
             </li>
           ))}
         </ul>
@@ -72,30 +87,37 @@ function Login() {
 
       <section className="login-right">
         <div className="login-card">
-          <h2>Welcome Back 👋</h2>
+          <h2>Welcome Back</h2>
           <p>Login to your shop dashboard</p>
 
           <form onSubmit={handleSubmit}>
-            <label>👤 Username</label>
-            <input
-              type="text"
-              placeholder="Enter username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
+            <label>Username</label>
+            <div className="input-icon">
+              <FaUser />
+              <input
+                type="text"
+                placeholder="Enter username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
 
-            <label>🔑 Password</label>
-            <input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <label>Password</label>
+            <div className="input-icon">
+              <FaLock />
+              <input
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-            {error && <span className="error-text">⚠️ {error}</span>}
+            {error && <span className="error-text">{error}</span>}
 
             <button type="submit" className="login-submit" disabled={loading}>
-              {loading ? "Logging in..." : "🔐 Login"}
+              <FaLock className="submit-icon" />{" "}
+              {loading ? "Logging in..." : "Login"}
             </button>
 
             <div className="demo-hint">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaPlus, FaEdit, FaTrashAlt, FaBoxes } from "react-icons/fa";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import "./Products.css";
@@ -110,7 +111,9 @@ export default function Products() {
       <div className="page-shell">
         <div className="page-header">
           <div>
-            <span className="page-eyebrow">🗂️ Inventory</span>
+            <span className="page-eyebrow">
+              <FaBoxes /> Inventory
+            </span>
             <h1 className="page-title">Products</h1>
             <p className="page-subtitle">
               Manage products, prices and stock levels.
@@ -118,7 +121,7 @@ export default function Products() {
           </div>
 
           <button className="btn btn-primary" onClick={openCreate}>
-            ➕ Add Product
+            <FaPlus /> Add Product
           </button>
         </div>
 
@@ -139,7 +142,7 @@ export default function Products() {
                 {products.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="empty-state">
-                      📦 No products found. Click "Add Product" to create one.
+                      No products found. Click "Add Product" to create one.
                     </td>
                   </tr>
                 ) : (
@@ -182,13 +185,13 @@ export default function Products() {
                           className="btn btn-soft"
                           onClick={() => editProduct(product)}
                         >
-                          ✏️ Edit
+                          <FaEdit /> Edit
                         </button>
                         <button
                           className="btn btn-danger"
                           onClick={() => deleteProduct(product.id)}
                         >
-                          🗑️ Delete
+                          <FaTrashAlt /> Delete
                         </button>
                       </td>
                     </tr>

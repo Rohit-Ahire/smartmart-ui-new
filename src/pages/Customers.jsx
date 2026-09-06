@@ -1,4 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
+import {
+  FaUsers,
+  FaStar,
+  FaCoins,
+  FaTrophy,
+  FaPlus,
+  FaEdit,
+  FaTrashAlt,
+  FaSearch,
+} from "react-icons/fa";
 import api from "../services/api";
 import Sidebar from "../components/Sidebar";
 import "./Customers.css";
@@ -106,25 +116,25 @@ export default function Customers() {
     {
       label: "Total Customers",
       value: stats.total,
-      emoji: "👥",
+      icon: <FaUsers />,
       tone: "teal",
     },
     {
       label: "Loyal (repeat buyers)",
       value: stats.loyal,
-      emoji: "⭐",
+      icon: <FaStar />,
       tone: "amber",
     },
     {
       label: "Customer Revenue",
       value: `₹${stats.revenue.toLocaleString()}`,
-      emoji: "💰",
+      icon: <FaCoins />,
       tone: "emerald",
     },
     {
       label: "Top Spender",
       value: stats.top ? stats.top.name : "—",
-      emoji: "🏆",
+      icon: <FaTrophy />,
       tone: "violet",
     },
   ];
@@ -136,15 +146,17 @@ export default function Customers() {
       <div className="page-shell">
         <div className="page-header">
           <div>
-            <span className="page-eyebrow">👥 Customers</span>
+            <span className="page-eyebrow">
+              <FaUsers /> Customers
+            </span>
             <h1 className="page-title">My Customers</h1>
             <p className="page-subtitle">
-              Track who buys, how often and how much they spend. ⭐
+              Track who buys, how often and how much they spend.
             </p>
           </div>
 
           <button className="btn btn-primary" onClick={openCreate}>
-            ➕ Add Customer
+            <FaPlus /> Add Customer
           </button>
         </div>
 
@@ -164,7 +176,7 @@ export default function Customers() {
 
         <div className="toolbar">
           <div className="search-box">
-            <span className="search-emoji">🔍</span>
+            <FaSearch className="search-emoji" />
             <input
               type="text"
               placeholder="Search by name or phone..."
@@ -193,8 +205,8 @@ export default function Customers() {
                   <tr>
                     <td colSpan="6" className="empty-state">
                       {customers.length === 0
-                        ? '👥 No customers yet. Add one, or quick-add from the Billing page.'
-                        : "🔍 No customers match your search."}
+                        ? "No customers yet. Add one, or quick-add from the Billing page."
+                        : "No customers match your search."}
                     </td>
                   </tr>
                 ) : (
@@ -233,13 +245,13 @@ export default function Customers() {
                           className="btn btn-soft"
                           onClick={() => editCustomer(customer)}
                         >
-                          ✏️ Edit
+                          <FaEdit /> Edit
                         </button>
                         <button
                           className="btn btn-danger"
                           onClick={() => deleteCustomer(customer.id)}
                         >
-                          🗑️ Delete
+                          <FaTrashAlt /> Delete
                         </button>
                       </td>
                     </tr>

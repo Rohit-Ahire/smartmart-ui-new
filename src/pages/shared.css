@@ -132,6 +132,10 @@
   flex-shrink: 0;
 }
 
+.stat-icon svg {
+  font-size: 24px;
+}
+
 .stat-icon.teal {
   background: #f0fdfa;
 }
@@ -335,7 +339,7 @@
 @media (max-width: 768px) {
   .page-shell {
     margin-left: 0;
-    padding: 76px 14px 24px;
+    padding: 24px 14px 88px;
   }
 
   .page-title {

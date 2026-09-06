@@ -20,6 +20,14 @@
 .brand h1 {
   font-size: 34px;
   letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  font-size: 28px;
+  color: #fbbf24;
 }
 
 .brand p {
@@ -31,6 +39,11 @@
 
 .feature-icon {
   margin-right: 2px;
+}
+
+.feature-icon svg {
+  vertical-align: -2px;
+  font-size: 15px;
 }
 
 .login-left h2 {
@@ -104,16 +117,32 @@
   margin-top: 8px;
 }
 
-.login-card input {
-  padding: 13px 14px;
+.input-icon {
+  position: relative;
+}
+
+.input-icon svg {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.input-icon input {
+  width: 100%;
+  padding: 13px 14px 13px 38px;
   border: 1px solid #d1d5db;
   border-radius: 10px;
   font-size: 15px;
   outline: none;
+  box-sizing: border-box;
   transition: border-color 0.2s;
 }
 
-.login-card input:focus {
+.input-icon input:focus {
   border-color: #059669;
 }
 
@@ -133,7 +162,15 @@
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   transition: background 0.2s;
+}
+
+.submit-icon {
+  font-size: 14px;
 }
 
 .login-submit:hover {
@@ -218,8 +255,8 @@
     font-size: 22px;
   }
 
-  .login-card input {
-    padding: 12px 13px;
+  .login-card .input-icon input {
+    padding: 12px 13px 12px 38px;
     font-size: 14.5px;
   }
 

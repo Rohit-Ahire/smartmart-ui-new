@@ -79,6 +79,22 @@
   text-align: center;
 }
 
+.brand-badge svg {
+  font-size: 20px;
+  color: #064e3b;
+}
+
+.sidebar-nav a svg {
+  font-size: 17px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.logout-btn svg {
+  font-size: 14px;
+}
+
 .sidebar-nav a:hover {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
@@ -165,77 +181,61 @@
 
 @media (max-width: 768px) {
   .sidebar {
-    top: 0;
+    top: auto;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: auto;
     width: 100%;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-  }
-
-  .sidebar-brand {
-    border-bottom: none;
-    margin-bottom: 0;
+    height: 62px;
+    flex-direction: column;
     padding: 0;
-    flex-shrink: 0;
+    background: #ffffff;
+    border-top: 1px solid #e7ecf5;
+    box-shadow: 0 -4px 18px rgba(15, 23, 42, 0.08);
   }
 
-  .brand-badge {
-    width: 34px;
-    height: 34px;
-    border-radius: 9px;
-    font-size: 16px;
-  }
-
-  .brand-text {
+  .sidebar-brand,
+  .sidebar-footer {
     display: none;
   }
 
   .sidebar-nav {
     flex-direction: row;
     flex: 1;
-    gap: 4px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .sidebar-nav::-webkit-scrollbar {
-    display: none;
+    gap: 0;
+    overflow: visible;
+    height: 100%;
   }
 
   .sidebar-nav a {
-    flex-shrink: 0;
-    padding: 8px 10px;
-    font-size: 12.5px;
-    gap: 6px;
-  }
-
-  .sidebar-nav a span:first-child {
-    font-size: 15px;
-    width: auto;
-  }
-
-  .sidebar-footer {
-    border-top: none;
-    padding-top: 0;
-    flex-direction: row;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
+    gap: 3px;
+    padding: 8px 2px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748b;
+    border-radius: 0;
+    border-top: 3px solid transparent;
   }
 
-  .user-chip {
-    display: none;
-  }
-
-  .logout-btn {
-    padding: 8px 11px;
-    font-size: 12px;
+  .sidebar-nav a svg {
     width: auto;
+    font-size: 20px;
+  }
+
+  .sidebar-nav a:hover {
+    background: transparent;
+    color: #059669;
+  }
+
+  .sidebar-nav a.active {
+    background: transparent;
+    color: #059669;
+    font-weight: 700;
+    box-shadow: none;
+    border-top-color: #059669;
   }
 }

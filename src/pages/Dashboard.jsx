@@ -1,4 +1,11 @@
 import { useEffect, useState } from "react";
+import {
+  FaBoxOpen,
+  FaUsers,
+  FaReceipt,
+  FaCoins,
+  FaChartBar,
+} from "react-icons/fa";
 import Sidebar from "../components/Sidebar";
 import api from "../services/api";
 import "./Dashboard.css";
@@ -59,25 +66,25 @@ export default function Dashboard() {
     {
       label: "Total Products",
       value: stats.products,
-      emoji: "📦",
+      icon: <FaBoxOpen />,
       tone: "teal",
     },
     {
       label: "Total Customers",
       value: stats.customers,
-      emoji: "👥",
+      icon: <FaUsers />,
       tone: "amber",
     },
     {
       label: "Total Bills",
       value: stats.bills,
-      emoji: "🧾",
+      icon: <FaReceipt />,
       tone: "emerald",
     },
     {
       label: "Total Revenue",
       value: `₹${stats.revenue.toLocaleString()}`,
-      emoji: "💰",
+      icon: <FaCoins />,
       tone: "violet",
     },
   ];
@@ -89,9 +96,11 @@ export default function Dashboard() {
       <div className="page-shell">
         <div className="page-header">
           <div>
-            <span className="page-eyebrow">📊 Dashboard Overview</span>
+            <span className="page-eyebrow">
+              <FaChartBar /> Dashboard Overview
+            </span>
             <h1 className="page-title">
-              {greeting()}, {username} 👋
+              {greeting()}, {username}
             </h1>
             <p className="page-subtitle">
               Here is what is happening at your store today.
@@ -102,7 +111,7 @@ export default function Dashboard() {
         <div className="stats-grid">
           {statCards.map((card) => (
             <div className="stat-card" key={card.label}>
-              <span className={`stat-icon ${card.tone}`}>{card.emoji}</span>
+              <span className={`stat-icon ${card.tone}`}>{card.icon}</span>
               <div>
                 <h2>{card.value}</h2>
                 <p>{card.label}</p>
@@ -151,8 +160,7 @@ export default function Dashboard() {
                   ) : (
                     <tr>
                       <td colSpan="4" className="empty-state">
-                        🧾 No bills yet. Create your first bill from the
-                        Billing page.
+                        No bills yet. Create your first bill from the Billing page.
                       </td>
                     </tr>
                   )}
