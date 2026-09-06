@@ -35,7 +35,7 @@ export default function Dashboard() {
       const [productsRes, customersRes, billsRes] = await Promise.all([
         api.get("/products"),
         api.get("/customers"),
-        api.get("/invoices"),
+        api.get("/bills"),
       ]);
 
       const bills = billsRes.data || [];

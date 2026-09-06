@@ -39,7 +39,19 @@ function Login() {
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      setError("Wrong username or password.");
+      if (!err.response) {
+        setError("Cannot reach the server. Check your internet and try again.");
+      } else if (
+        err.response.status === 401 ||
+        (err.response.data &&
+          /invalid (username|password)/i.test(
+            String(err.response.data?.message || "")
+          ))
+      ) {
+        setError("Wrong username or password.");
+      } else {
+        setError("Something went wrong on the server. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

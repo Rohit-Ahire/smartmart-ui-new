@@ -199,6 +199,7 @@ function Billing() {
         customerName: chosen
           ? chosen.name
           : walkInName.trim() || "Walk-in Customer",
+        paymentMethod: paymentMethod.toUpperCase(),
         items: cart.map((item) => ({
           productId: item.id,
           quantity: item.quantity,
@@ -266,7 +267,7 @@ function Billing() {
         <div className="page-header">
           <div>
             <span className="page-eyebrow">Point of Sale</span>
-            <h1 className="page-title">Billing</h1>
+            <h1 className="page-title">Cart</h1>
             <p className="page-subtitle">
               Pick products, choose a payment method and generate instant bills.
             </p>
@@ -360,6 +361,17 @@ function Billing() {
                       ? `${product.quantity} in stock`
                       : "Out of stock"}
                   </span>
+                  <button
+                    type="button"
+                    className="add-to-cart-btn"
+                    disabled={product.quantity <= 0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToCart(product);
+                    }}
+                  >
+                    Add to Cart
+                  </button>
                 </div>
               ))}
             </div>
