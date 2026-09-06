@@ -381,3 +381,32 @@
     position: static;
   }
 }
+
+@media (max-width: 768px) {
+  .products-section,
+  .cart-section {
+    padding: 16px;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+    max-height: none;
+  }
+
+  .customer-pick-row {
+    flex-direction: column;
+  }
+
+  .new-customer-btn {
+    padding: 12px;
+  }
+
+  .payment-methods {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-section h2,
+  .products-section h2 {
+    font-size: 16px;
+  }
+}

@@ -162,3 +162,80 @@
   border-color: rgba(239, 68, 68, 0.4);
   color: #fecaca;
 }
+
+@media (max-width: 768px) {
+  .sidebar {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+  }
+
+  .sidebar-brand {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .brand-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    font-size: 16px;
+  }
+
+  .brand-text {
+    display: none;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    flex: 1;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sidebar-nav a {
+    flex-shrink: 0;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    gap: 6px;
+  }
+
+  .sidebar-nav a span:first-child {
+    font-size: 15px;
+    width: auto;
+  }
+
+  .sidebar-footer {
+    border-top: none;
+    padding-top: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .user-chip {
+    display: none;
+  }
+
+  .logout-btn {
+    padding: 8px 11px;
+    font-size: 12px;
+    width: auto;
+  }
+}

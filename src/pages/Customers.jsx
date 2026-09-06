@@ -223,7 +223,9 @@ export default function Customers() {
                       </td>
                       <td>
                         {customer.lastVisit
-                          ? new Date(customer.lastVisit).toLocaleDateString()
+                          ? new Date(customer.lastVisit).toLocaleDateString("en-IN", {
+                              timeZone: "Asia/Kolkata",
+                            })
                           : "—"}
                       </td>
                       <td>

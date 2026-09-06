@@ -82,7 +82,9 @@ export default function Invoices() {
                       </td>
                       <td>
                         {invoice.createdAt
-                          ? new Date(invoice.createdAt).toLocaleString()
+                          ? new Date(invoice.createdAt).toLocaleString("en-IN", {
+                              timeZone: "Asia/Kolkata",
+                            })
                           : "-"}
                       </td>
                       <td>

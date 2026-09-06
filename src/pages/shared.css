@@ -335,6 +335,65 @@
 @media (max-width: 768px) {
   .page-shell {
     margin-left: 0;
-    padding: 24px 20px;
+    padding: 76px 14px 24px;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .page-header {
+    margin-bottom: 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 19px;
+  }
+
+  .stat-card h2 {
+    font-size: 19px;
+  }
+
+  .stat-card p {
+    font-size: 12px;
+  }
+
+  .modal {
+    padding: 22px 18px;
+    border-radius: 14px;
+  }
+
+  .modal-actions {
+    flex-wrap: wrap;
+  }
+
+  .modal-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .btn {
+    padding: 10px 14px;
+    font-size: 13px;
   }
 }
