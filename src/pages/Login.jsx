@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   FaShoppingCart,
   FaBolt,
@@ -40,7 +40,15 @@ function Login() {
     } catch (err) {
       console.error(err);
       if (!err.response) {
-        setError("Cannot reach the server. Check your internet and try again.");
+        if (err.message && err.message.includes("Network Error")) {
+          setError(
+            "Cannot connect to the server. This may be a CORS or network issue. Please try again later."
+          );
+        } else {
+          setError(
+            "Cannot reach the server. Check your internet and try again."
+          );
+        }
       } else if (
         err.response.status === 401 ||
         (err.response.data &&
@@ -49,8 +57,13 @@ function Login() {
           ))
       ) {
         setError("Wrong username or password.");
+      } else if (err.response.status === 403) {
+        setError("Access denied. Please contact the administrator.");
       } else {
-        setError("Something went wrong on the server. Please try again.");
+        setError(
+          err.response.data?.message ||
+            "Something went wrong on the server. Please try again."
+        );
       }
     } finally {
       setLoading(false);
@@ -134,6 +147,11 @@ function Login() {
 
             <div className="demo-hint">
               Demo login: <strong>admin</strong> / <strong>admin123</strong>
+            </div>
+
+            <div className="login-footer">
+              Don&apos;t have an account?{" "}
+              <Link to="/register">Register</Link>
             </div>
           </form>
         </div>

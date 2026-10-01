@@ -192,6 +192,23 @@
   padding: 10px;
 }
 
+.login-footer {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.login-footer a {
+  color: #059669;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 900px) {
   .login-page {
     flex-direction: column;
