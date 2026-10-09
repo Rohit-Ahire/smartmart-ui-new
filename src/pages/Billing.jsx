@@ -19,10 +19,13 @@ function Billing() {
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [newCustomer, setNewCustomer] = useState({ name: "", phone: "" });
   const [savingCustomer, setSavingCustomer] = useState(false);
+  const [pendingBills, setPendingBills] = useState([]);
+  const [retryBill, setRetryBill] = useState(null);
 
   useEffect(() => {
     fetchProducts();
     loadCustomers();
+    loadPendingBills();
   }, []);
 
   async function fetchProducts() {
@@ -32,6 +35,18 @@ function Billing() {
     } catch (err) {
       console.error(err);
       alert("Failed to load products.");
+    }
+  }
+
+  async function loadPendingBills() {
+    try {
+      const res = await api.get(BILL_API);
+      const pending = (res.data || []).filter(
+        (b) => (b.paymentStatus || "").toUpperCase() !== "PAID"
+      );
+      setPendingBills(pending);
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -111,6 +126,7 @@ function Billing() {
     setWalkInName("");
     setCustomerId("");
     fetchProducts();
+    loadPendingBills();
   };
 
   const addNewCustomer = async (e) => {
@@ -140,6 +156,11 @@ function Billing() {
 
   const openRazorpay = (bill, order) => {
     return new Promise((resolve, reject) => {
+      if (!window.Razorpay) {
+        reject(new Error("Payment gateway is unavailable right now."));
+        return;
+      }
+
       const options = {
         key: order.key,
         amount: order.amount,
@@ -160,8 +181,8 @@ function Billing() {
               razorpaySignature: response.razorpay_signature,
             });
             resolve(response);
-          } catch {
-            reject(new Error("Payment verification failed"));
+          } catch (err) {
+            reject(err);
           }
         },
         modal: {
@@ -180,6 +201,67 @@ function Billing() {
 
       rzp.open();
     });
+  };
+
+  const getPaymentErrorMessage = (payErr) => {
+    const isAxios = !!payErr?.isAxiosError;
+
+    if (payErr?.response?.status >= 500) {
+      return "Payment server is not working. Please try again later.";
+    }
+    if (isAxios && !payErr.response) {
+      return "Payment server is not responding. Please check your connection and try again.";
+    }
+    if (isAxios) {
+      const data = payErr.response?.data;
+      if (data?.status === "failed") return "Payment verification failed.";
+      return data?.message || data?.error || "Payment could not be completed.";
+    }
+    if (payErr?.message === "Payment window closed") {
+      return "Payment was cancelled.";
+    }
+    return payErr?.message || "Payment could not be completed.";
+  };
+
+  const retryCash = async (bill) => {
+    setProcessing(true);
+    try {
+      await api.put(`${BILL_API}/${bill.id}/pay`);
+      alert(`Bill #${bill.id} marked as PAID (Cash).`);
+      setRetryBill(null);
+      loadPendingBills();
+    } catch (err) {
+      console.error(err);
+      alert(
+        err.response?.data?.message ||
+          "Could not mark the bill as paid. Please try again."
+      );
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const retryOnline = async (bill) => {
+    setProcessing(true);
+    try {
+      const order = await api.post("/payment/create-order", {
+        billId: bill.id,
+      });
+
+      await openRazorpay(bill, order.data);
+
+      alert(`Payment successful!\nBill #${bill.id} - Rs. ${bill.totalAmount}`);
+      setRetryBill(null);
+      loadPendingBills();
+    } catch (payErr) {
+      console.error(payErr);
+      const message = getPaymentErrorMessage(payErr);
+      alert(
+        `${message}\n\nBill #${bill.id} was NOT marked as paid. It is still UNPAID and can be retried.`
+      );
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const handleBill = async () => {
@@ -236,17 +318,12 @@ function Billing() {
         resetAfterBill();
       } catch (payErr) {
         console.error(payErr);
-        const isCashPlan = window.confirm(
-          "Online payment could not be completed. Keep the bill for retry, or mark as cash?"
+
+        const message = getPaymentErrorMessage(payErr);
+
+        alert(
+          `${message}\n\nBill #${bill.id} was NOT marked as paid. It is saved as UNPAID and can be retried.`
         );
-
-        if (isCashPlan) {
-          await api.put(`${BILL_API}/${bill.id}/pay`);
-          alert(`Bill #${bill.id} marked as PAID (Cash fallback).`);
-        } else {
-          alert(`Bill #${bill.id} saved as PENDING for retry.`);
-        }
-
         resetAfterBill();
       }
     } catch (err) {
@@ -273,6 +350,36 @@ function Billing() {
             </p>
           </div>
         </div>
+
+        {pendingBills.length > 0 && (
+          <div className="pending-panel">
+            <div className="pending-panel-head">
+              <h3>
+                Pending Payments <span>{pendingBills.length}</span>
+              </h3>
+              <p>These bills are not paid yet. Click a bill to retry the payment.</p>
+            </div>
+
+            <div className="pending-list">
+              {pendingBills.map((b) => (
+                <button
+                  type="button"
+                  key={b.id}
+                  className="pending-item"
+                  onClick={() => setRetryBill(b)}
+                >
+                  <span className="pending-id">#{b.id}</span>
+                  <span className="pending-customer">{b.customerName}</span>
+                  <span className="pending-amount">
+                    Rs. {Number(b.totalAmount).toFixed(2)}
+                  </span>
+                  <span className="pending-badge">Unpaid</span>
+                  <span className="pending-retry">Retry Payment</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="billing-layout">
           <div className="products-section">
@@ -342,12 +449,6 @@ function Billing() {
                   onClick={() => addToCart(product)}
                   title="Click to add to cart"
                 >
-                  {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name} />
-                  ) : (
-                    <div className="no-image">No Image</div>
-                  )}
-
                   <h3>{product.name}</h3>
                   <p className="product-price">₹ {product.price}</p>
                   <span
@@ -467,6 +568,54 @@ function Billing() {
           </div>
         </div>
       </div>
+
+      {retryBill && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Retry Payment</h2>
+            <p className="modal-hint">
+              Bill #{retryBill.id} · {retryBill.customerName}
+              <br />
+              Amount: Rs. {Number(retryBill.totalAmount).toFixed(2)}
+            </p>
+
+            <div className="retry-options">
+              <button
+                type="button"
+                className="retry-option cash"
+                disabled={processing}
+                onClick={() => retryCash(retryBill)}
+              >
+                <FaMoneyBillWave />
+                <span>Pay by Cash</span>
+                <small>Collect cash for this bill</small>
+              </button>
+
+              <button
+                type="button"
+                className="retry-option online"
+                disabled={processing}
+                onClick={() => retryOnline(retryBill)}
+              >
+                <FaCreditCard />
+                <span>Pay Online</span>
+                <small>Card / UPI via Razorpay</small>
+              </button>
+            </div>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setRetryBill(null)}
+                disabled={processing}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showCustomerModal && (
         <div className="modal-overlay">

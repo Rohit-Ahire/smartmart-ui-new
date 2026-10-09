@@ -108,7 +108,7 @@
 .login-card form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .login-card label {
@@ -121,7 +121,7 @@
   position: relative;
 }
 
-.input-icon svg {
+.input-icon > svg:first-child {
   position: absolute;
   left: 13px;
   top: 50%;
@@ -133,23 +133,81 @@
 
 .input-icon input {
   width: 100%;
-  padding: 13px 14px 13px 38px;
-  border: 1px solid #d1d5db;
+  padding: 13px 44px 13px 38px;
+  border: 1.5px solid #d1d5db;
   border-radius: 10px;
   font-size: 15px;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.2s;
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
 
 .input-icon input:focus {
   border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* Validation state: error */
+.input-icon.input-error input {
+  border-color: #ef4444;
+}
+
+.input-icon.input-error input:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Field-level error message */
+.field-error {
+  color: #ef4444;
+  font-size: 12.5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding-left: 2px;
+  display: block;
+  animation: fadeInLogin 0.2s ease;
+}
+
+@keyframes fadeInLogin {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Toggle password visibility */
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 15px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.toggle-password:hover {
+  color: #6b7280;
 }
 
 .error-text {
   color: #dc2626;
   font-size: 14px;
   margin-top: 6px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 14px;
 }
 
 .login-submit {
@@ -166,7 +224,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s;
 }
 
 .submit-icon {
@@ -175,21 +233,29 @@
 
 .login-submit:hover {
   background: #047857;
+  transform: translateY(-1px);
 }
 
 .login-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
-.demo-hint {
-  margin-top: 16px;
-  text-align: center;
+.forgot-link-container {
+  text-align: right;
+  margin-top: 2px;
+}
+
+.forgot-link {
+  color: #059669;
   font-size: 13px;
-  color: #6b7280;
-  background: #f3f4f6;
-  border-radius: 8px;
-  padding: 10px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
 }
 
 .login-footer {
@@ -273,7 +339,7 @@
   }
 
   .login-card .input-icon input {
-    padding: 12px 13px 12px 38px;
+    padding: 12px 40px 12px 38px;
     font-size: 14.5px;
   }
 

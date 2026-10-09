@@ -6,21 +6,18 @@ import "./Products.css";
 import "./shared.css";
 
 const PRODUCT_API = "/products";
-const UPLOAD_API = "/upload";
 
 const EMPTY_FORM = {
   name: "",
   category: "",
   price: "",
   quantity: "",
-  imageUrl: "",
 };
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [uploading, setUploading] = useState(false);
 
   const [form, setForm] = useState(EMPTY_FORM);
 
@@ -32,32 +29,6 @@ export default function Products() {
     const res = await api.get(PRODUCT_API);
     setProducts(res.data || []);
   }
-
-  const uploadImage = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const data = new FormData();
-    data.append("file", file);
-
-    setUploading(true);
-
-    try {
-      const res = await api.post(UPLOAD_API, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      setForm((prev) => ({
-        ...prev,
-        imageUrl: res.data.imageUrl,
-      }));
-    } catch (err) {
-      console.error(err);
-      alert("Image upload failed");
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const openCreate = () => {
     setEditing(null);
@@ -92,7 +63,6 @@ export default function Products() {
       category: product.category,
       price: product.price,
       quantity: product.quantity,
-      imageUrl: product.imageUrl || "",
     });
     setShowModal(true);
   };
@@ -150,15 +120,6 @@ export default function Products() {
                     <tr key={product.id}>
                       <td>
                         <div className="product-cell">
-                          {product.imageUrl ? (
-                            <img
-                              src={product.imageUrl}
-                              alt={product.name}
-                              className="product-image"
-                            />
-                          ) : (
-                            <div className="no-image">No</div>
-                          )}
                           <div>
                             <strong>{product.name}</strong>
                             <small className="product-id">
@@ -261,19 +222,6 @@ export default function Products() {
                 required
               />
 
-              <label>Product Image</label>
-              <input type="file" accept="image/*" onChange={uploadImage} />
-
-              {uploading && <p className="upload-hint">Uploading image...</p>}
-
-              {form.imageUrl && !uploading && (
-                <img
-                  src={form.imageUrl}
-                  alt="Preview"
-                  className="thumb-preview"
-                />
-              )}
-
               <div className="modal-actions">
                 <button
                   type="button"
@@ -282,11 +230,7 @@ export default function Products() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={uploading}
-                >
+                <button type="submit" className="btn btn-primary">
                   {editing ? "Update" : "Save"}
                 </button>
               </div>

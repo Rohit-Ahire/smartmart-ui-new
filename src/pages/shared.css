@@ -296,8 +296,7 @@
 
 .modal input[type="text"],
 .modal input[type="number"],
-.modal input[type="password"],
-.modal input[type="file"] {
+.modal input[type="password"] {
   width: 100%;
   padding: 12px 14px;
   border: 1px solid #dbe2ef;
@@ -319,21 +318,6 @@
   justify-content: flex-end;
   gap: 10px;
   margin-top: 24px;
-}
-
-.thumb-preview {
-  width: 76px;
-  height: 76px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-top: 12px;
-  border: 1px solid #e7ecf5;
-}
-
-.upload-hint {
-  font-size: 13px;
-  color: #059669;
-  margin-top: 10px;
 }
 
 @media (max-width: 768px) {

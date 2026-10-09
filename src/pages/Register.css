@@ -79,7 +79,7 @@
 
 .register-card {
   background: white;
-  width: 420px;
+  width: 440px;
   max-width: 100%;
   padding: 36px 36px;
   border-radius: 20px;
@@ -99,7 +99,7 @@
 .register-card form {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .register-card label {
@@ -112,7 +112,7 @@
   position: relative;
 }
 
-.register-card .input-icon svg {
+.register-card .input-icon > svg:first-child {
   position: absolute;
   left: 13px;
   top: 50%;
@@ -124,23 +124,111 @@
 
 .register-card .input-icon input {
   width: 100%;
-  padding: 12px 14px 12px 38px;
-  border: 1px solid #d1d5db;
+  padding: 12px 44px 12px 38px;
+  border: 1.5px solid #d1d5db;
   border-radius: 10px;
   font-size: 15px;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.2s;
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
 
 .register-card .input-icon input:focus {
   border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* Validation state: error */
+.register-card .input-icon.input-error input {
+  border-color: #ef4444;
+}
+
+.register-card .input-icon.input-error input:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Validation state: valid */
+.register-card .input-icon.input-valid input {
+  border-color: #10b981;
+}
+
+.register-card .input-icon.input-valid input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Status icon (checkmark or X) inside the input */
+.input-status-icon {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.icon-error {
+  color: #ef4444;
+}
+
+.icon-valid {
+  color: #10b981;
+}
+
+/* Field-level error message */
+.field-error {
+  color: #ef4444;
+  font-size: 12.5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding-left: 2px;
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Toggle password visibility button */
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 15px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.toggle-password:hover {
+  color: #6b7280;
 }
 
 .register-error {
   color: #dc2626;
   font-size: 14px;
   margin-top: 6px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 14px;
 }
 
 .register-success {
@@ -148,6 +236,10 @@
   font-size: 14px;
   margin-top: 6px;
   font-weight: 500;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  padding: 10px 14px;
 }
 
 .register-submit {
@@ -164,16 +256,18 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.15s;
 }
 
 .register-submit:hover {
   background: #047857;
+  transform: translateY(-1px);
 }
 
 .register-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
 .register-footer {
@@ -258,7 +352,7 @@
   }
 
   .register-card .input-icon input {
-    padding: 11px 13px 11px 38px;
+    padding: 11px 40px 11px 38px;
     font-size: 14.5px;
   }
 
